@@ -46,6 +46,15 @@ All agents communicate securely through the Coral Protocol framework and use Mis
 git clone https://github.com/mumarasif/ai-alert-triage-system.git
 cd ai-alert-triage-system
 
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
+
 # Install dependencies
 pip install -r requirements.txt
 
@@ -59,6 +68,12 @@ python comprehensive_orchestration_demo.py
 ### Run the System
 
 ```bash
+# Activate virtual environment (if not already active)
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
+
 # Start the AI-powered system
 python src/main.py
 
