@@ -1,0 +1,459 @@
+# Alert Triage System - Default Configuration
+
+# Application metadata
+app:
+  name: "Alert Triage System"
+  version: "1.0.0"
+  description: "Intelligent security alert triage using Coral Protocol"
+
+# Logging configuration
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: logs/alert_triage.log
+  structured: false
+  max_file_size: 10485760  # 10MB
+  backup_count: 5
+  module_levels:
+    asyncio: WARNING
+    aiohttp: WARNING
+    urllib3: WARNING
+
+# Coral Protocol settings
+coral_protocol:
+  max_message_history: 1000
+  heartbeat_interval: 30
+  message_timeout: 60
+  max_queue_size: 1000
+
+# Orchestration settings
+orchestration:
+  enabled: true  # Enable true orchestration mode
+  orchestrator_agent: "true_orchestrator_ai"
+  workflow_timeout: 300
+  max_concurrent_workflows: 100
+  retry_policy:
+    max_retries: 3
+    retry_delay: 5
+    exponential_backoff: true
+  monitoring:
+    enable_workflow_tracking: true
+    enable_performance_metrics: true
+    enable_agent_health_monitoring: true
+
+# Agent configurations
+agents:
+  alert_receiver:
+    # AI-powered mode configuration
+    use_ai_mode: true  # Set to false to use legacy rule-based mode
+    max_queue_size: 1000
+    
+    # Legacy rule-based settings (used when use_ai_mode: false)
+    supported_systems:
+      - splunk
+      - qradar
+      - sentinel
+      - edr
+      - ids
+      - firewall
+      - email_security
+      - web_proxy
+      - antivirus
+      - custom
+    
+    # AI-specific settings
+    ai_settings:
+      enable_intelligent_normalization: true
+      enable_workflow_optimization: true
+      enable_adaptive_routing: true
+      normalization_confidence_threshold: 0.7
+      supported_data_formats:
+        - "JSON"
+        - "CEF"
+        - "LEEF"
+        - "Syslog"
+        - "XML"
+        - "CSV"
+      vendor_intelligence:
+        - "Splunk"
+        - "IBM QRadar"
+        - "Microsoft Sentinel"
+        - "CrowdStrike"
+        - "Palo Alto Networks"
+        - "Fortinet"
+    
+  false_positive_checker:
+    # AI-powered mode configuration
+    use_ai_mode: true  # Set to false to use legacy rule-based mode
+    confidence_threshold: 0.7
+    
+    # Legacy rule-based settings (used when use_ai_mode: false)
+    enable_ml_analysis: true
+    ml_model_path: data/models/false_positive_model.pkl
+    trusted_ips:
+      - 10.0.0.1
+      - 192.168.1.1
+      - 10.0.0.100
+    test_accounts:
+      - test_user
+      - qa_account
+      - service_account
+      
+    # AI-specific settings
+    ai_settings:
+      enable_feedback_learning: true
+      max_reasoning_length: 5
+      include_risk_factors: true
+      business_hours_start: 8  # 8 AM UTC
+      business_hours_end: 18   # 6 PM UTC
+      maintenance_windows:
+        - "Saturday 02:00-06:00 UTC"
+        - "Sunday 02:00-06:00 UTC"
+      
+  severity_analyzer:
+    # AI-powered mode configuration
+    use_ai_mode: true  # Set to false to use legacy rule-based mode
+    escalation_threshold: 0.8
+    
+    # Legacy rule-based settings (used when use_ai_mode: false)
+    enable_dynamic_scoring: true
+    critical_assets:
+      - domain_controller
+      - file_server
+      - database_server
+      - email_server
+    high_privilege_indicators:
+      - admin
+      - administrator
+      - root
+      - sa
+      
+    # AI-specific settings
+    ai_settings:
+      consider_business_impact: true
+      include_threat_landscape: true
+      threat_intelligence_enabled: true
+      business_hours_start: 8  # 8 AM UTC
+      business_hours_end: 18   # 6 PM UTC
+      critical_infrastructure:
+        - "Domain controllers"
+        - "Financial systems" 
+        - "Customer databases"
+        - "Email servers"
+      compliance_requirements:
+        - "SOX"
+        - "PCI-DSS"
+        - "GDPR"
+      
+  context_gatherer:
+    # AI-powered mode configuration
+    use_ai_mode: true  # Set to false to use legacy rule-based mode
+    context_timeout: 30
+    
+    # Legacy rule-based settings (used when use_ai_mode: false)
+    threat_intel_enabled: true
+    user_context_enabled: true
+    network_context_enabled: true
+    historical_analysis_enabled: true
+    
+    # AI-specific settings
+    ai_settings:
+      enable_correlation_analysis: true
+      enable_threat_landscape_assessment: true
+      enable_campaign_attribution: true
+      intelligence_confidence_threshold: 0.7
+      context_sources:
+        - "threat_intelligence"
+        - "user_behavior_analysis"
+        - "network_flow_analysis"
+        - "historical_pattern_recognition"
+        - "geolocation_analysis"
+      threat_intelligence_feeds:
+        - "commercial_feeds"
+        - "open_source_intelligence"
+        - "internal_indicators"
+      correlation_timeframe_hours: 168  # 7 days
+    
+  response_coordinator:
+    # AI-powered mode configuration  
+    use_ai_mode: true  # Set to false to use legacy rule-based mode
+    auto_escalation_threshold: 0.8
+    enable_automation: true
+    
+    # Legacy rule-based settings (used when use_ai_mode: false)
+    default_assignment_tier: tier1_analyst
+    soar_enabled: false
+    
+    # AI-specific settings
+    ai_settings:
+      enable_intelligent_assignment: true
+      enable_automated_response_optimization: true
+      enable_dynamic_escalation: true
+      response_confidence_threshold: 0.7
+      automation_safety_threshold: 0.8
+      analyst_tiers:
+        - "TIER1_ANALYST"
+        - "TIER2_ANALYST" 
+        - "SENIOR_ANALYST"
+        - "INCIDENT_COMMANDER"
+      automation_capabilities:
+        - "block_malicious_ip"
+        - "quarantine_malware"
+        - "isolate_host"
+        - "disable_user_account"
+      soar_integration:
+        platform: "phantom"
+        auto_ticket_creation: true
+        workflow_templates: ["critical_incident", "high_priority", "standard_incident"]
+    
+  workflow_orchestrator:
+    # AI-powered mode configuration
+    use_ai_mode: true  # Set to false to use legacy rule-based mode
+    workflow_timeout: 300
+    max_concurrent_workflows: 100
+    
+    # Legacy rule-based settings (used when use_ai_mode: false)
+    default_template: standard_triage
+    
+    # AI-specific settings
+    ai_settings:
+      enable_adaptive_routing: true
+      enable_pattern_learning: true
+      enable_performance_optimization: true
+      orchestration_confidence_threshold: 0.7
+      workflow_patterns:
+        - "ai_standard_triage"
+        - "ai_fast_track"
+        - "ai_critical_enhanced"
+        - "ai_adaptive_custom"
+      performance_targets:
+        average_processing_time: 600  # 10 minutes
+        success_rate: 0.95
+        automation_rate: 0.8
+      optimization_criteria:
+        - "processing_speed"
+        - "quality_accuracy"
+        - "resource_efficiency"
+        - "analyst_satisfaction"
+
+# External integrations
+integrations:
+  siem:
+    enabled: false
+    type: splunk  # splunk, qradar, sentinel, arcsight
+    endpoint: ""
+    api_key: ""
+    verify_ssl: true
+    timeout: 30
+    
+  soar:
+    enabled: false
+    type: phantom  # phantom, demisto, resilient, swimlane
+    endpoint: ""
+    api_key: ""
+    verify_ssl: true
+    timeout: 30
+    
+  threat_intel:
+    enabled: false
+    providers:
+      virustotal:
+        enabled: false
+        api_key: ""
+        rate_limit: 4  # requests per minute
+      misp:
+        enabled: false
+        url: ""
+        key: ""
+        verify_ssl: true
+      otx:
+        enabled: false
+        api_key: ""
+
+# API settings
+api:
+  webhook:
+    enabled: true
+    host: 0.0.0.0
+    port: 8080
+    secret: "${WEBHOOK_SECRET:}"
+    require_auth: false
+    max_payload_size: 1048576  # 1MB
+    
+  rest:
+    enabled: true
+    host: 0.0.0.0
+    port: 8081
+    require_auth: false
+    cors_enabled: true
+    
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 1000
+    burst_size: 100
+
+# Security settings
+security:
+  api_key_required: false
+  jwt_secret: "${JWT_SECRET:}"
+  token_expiry: 3600  # 1 hour
+  allowed_origins:
+    - "http://localhost:3000"
+    - "https://your-domain.com"
+  encryption:
+    enabled: false
+    algorithm: "AES-256-GCM"
+    key: "${ENCRYPTION_KEY:}"
+
+# Metrics and monitoring
+metrics:
+  enabled: true
+  prometheus_port: 9090
+  collection_interval: 60
+  retention_period: 86400  # 24 hours
+  
+monitoring:
+  health_check_interval: 60
+  alert_on_failure: true
+  performance_monitoring: true
+  audit_logging: true
+
+# Database settings (for future use)
+database:
+  enabled: false
+  type: postgresql  # postgresql, mysql, sqlite
+  host: localhost
+  port: 5432
+  name: alert_triage
+  username: ""
+  password: ""
+  pool_size: 10
+  max_connections: 100
+
+# Caching settings
+cache:
+  enabled: true
+  type: memory  # memory, redis, memcached
+  ttl: 3600  # 1 hour
+  max_size: 1000
+  
+  redis:
+    host: localhost
+    port: 6379
+    db: 0
+    password: ""
+
+# Queue settings (for high-volume deployments)
+queue:
+  enabled: false
+  type: redis  # redis, rabbitmq, kafka
+  host: localhost
+  port: 6379
+  name: alert_queue
+  
+# ML/AI settings
+ml:
+  enabled: false
+  model_path: data/models/
+  training_enabled: false
+  auto_retrain: false
+  confidence_threshold: 0.8
+  
+  models:
+    false_positive:
+      path: data/models/false_positive_model.pkl
+      version: "1.0"
+      last_trained: ""
+    severity:
+      path: data/models/severity_model.pkl
+      version: "1.0" 
+      last_trained: ""
+
+# LLM Configuration
+llm:
+  enabled: true  # Will auto-disable if LLM_API_KEY is not set
+  provider: "aimlapi"
+  
+  # Mistral configuration via aimlapi.com
+  mistral:
+    api_key: "${LLM_API_KEY:}"  # Set via environment variable LLM_API_KEY
+    base_url: "https://api.aimlapi.com/v1"
+    model: "mistralai/Mistral-7B-Instruct-v0.2"
+    max_tokens: 4096
+    temperature: 0.1  # Low temperature for deterministic responses
+    timeout: 30
+    max_retries: 3
+    retry_delay: 1
+    
+  # Rate limiting for LLM calls
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst_size: 10
+    
+  # Token management
+  tokens:
+    max_input_tokens: 8192
+    max_output_tokens: 4096
+    reserve_tokens: 512  # Reserve for system prompts
+    
+  # Caching for LLM responses
+  caching:
+    enabled: true
+    ttl: 3600  # 1 hour
+    max_cache_size: 1000
+
+# Notification settings
+notifications:
+  enabled: false
+  channels:
+    email:
+      enabled: false
+      smtp_host: ""
+      smtp_port: 587
+      username: ""
+      password: ""
+      from_address: ""
+    slack:
+      enabled: false
+      webhook_url: ""
+      channel: "#security-alerts"
+    teams:
+      enabled: false
+      webhook_url: ""
+
+# Backup and recovery
+backup:
+  enabled: false
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  storage_path: backups/
+  
+# Performance tuning
+performance:
+  worker_processes: 4
+  max_concurrent_tasks: 100
+  task_timeout: 300
+  memory_limit: "512MB"
+  cpu_limit: "2.0"
+  
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 5
+    recovery_timeout: 60
+    
+# Development settings
+development:
+  debug: false
+  hot_reload: false
+  mock_integrations: true
+  sample_data_enabled: true
+  test_mode: false
+
+# Feature flags
+features:
+  advanced_analytics: false
+  ai_recommendations: false
+  automated_response: true
+  threat_hunting: false
+  compliance_reporting: false
