@@ -4,10 +4,12 @@ uvicorn==0.35.0
 pydantic==2.11.9
 PyYAML==6.0.2
 structlog==25.4.0
-supabase==2.10.0
 
 # Configuration management
 python-dotenv==1.1.1
+
+# Database
+supabase==2.10.0
 
 # LLM Integration
 openai==1.108.1
@@ -18,5 +20,5 @@ tiktoken==0.11.0
 # Monitoring and metrics (optional)
 prometheus_client==0.22.1
 
-# HTTP client (used by requests and other packages)
-httpx==0.28.1
+# HTTP client - Compatible with supabase
+httpx>=0.26,<0.28
