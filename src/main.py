@@ -45,6 +45,10 @@ from utils.logging_config import setup_logging
 from utils.config_loader import load_config
 from utils.metrics_collector import MetricsCollector
 
+# Import database and API components
+from services.database_service import db_service
+from api.routes import app as api_routes_app
+
 logger = logging.getLogger(__name__)
 
 # Global system instance
@@ -72,15 +76,18 @@ async def lifespan(app: FastAPI):
     if system_instance:
         await system_instance.shutdown()
 
-# FastAPI app
+# FastAPI app - integrate with database API routes
 app = FastAPI(
     title="Orchestrated Alert Triage System API",
-    description="AI-powered security alert processing system with true orchestration",
+    description="AI-powered security alert processing system with true orchestration and Supabase integration",
     version="2.0.0",
     lifespan=lifespan,
-    docs_url=None,  # Disable automatic docs to avoid schema generation issues
-    redoc_url=None
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
+
+# Include API routes from routes.py
+app.include_router(api_routes_app.router)
 
 class OrchestratedAlertTriageSystem:
     """Main orchestrated system with true workflow orchestration"""
@@ -195,6 +202,33 @@ class OrchestratedAlertTriageSystem:
         try:
             logger.info(f"Processing alert through orchestrated workflow: {alert_data.get('id', 'unknown')}")
             
+            # Save alert to database first
+            alert_id = alert_data.get('id', alert_data.get('alert_id', str(uuid.uuid4())))
+            db_alert = None
+            
+            try:
+                db_alert = await db_service.create_alert({
+                    "alert_id": alert_id,
+                    "type": alert_data.get("type", "unknown"),
+                    "description": alert_data.get("description", "Unknown Alert"),
+                    "source_ip": alert_data.get("source_ip"),
+                    "user_id": alert_data.get("user_id"),
+                    "hostname": alert_data.get("hostname"),
+                    "severity": alert_data.get("severity", "medium"),
+                    "status": "processing",
+                    "source_system": source_metadata.get("system_name", "unknown") if source_metadata else "unknown",
+                    "raw_data": alert_data
+                })
+                
+                if db_alert:
+                    logger.info(f"Alert saved to database: {alert_id}")
+                else:
+                    logger.warning(f"Failed to save alert to database: {alert_id}")
+                    
+            except Exception as db_error:
+                logger.error(f"Database error while saving alert: {db_error}")
+                # Continue processing even if database save fails
+            
             # Create workflow initiation message
             workflow_message = CoralMessage(
                 id=str(uuid.uuid4()),
@@ -209,7 +243,8 @@ class OrchestratedAlertTriageSystem:
                         "alert_data": alert_data,
                         "source_metadata": source_metadata or {},
                         "initiated_by": "api_webhook",
-                        "initiated_at": datetime.utcnow().isoformat()
+                        "initiated_at": datetime.utcnow().isoformat(),
+                        "database_alert_id": db_alert.get("id") if db_alert else None
                     }
                 },
                 priority=MessagePriority.HIGH,
@@ -239,12 +274,25 @@ class OrchestratedAlertTriageSystem:
             if workflow_id:
                 logger.info(f"Alert workflow initiated: {workflow_id}")
                 
+                # Save workflow state to database
+                try:
+                    await db_service.save_workflow_state(workflow_id, {
+                        "status": "initiated",
+                        "alert_id": alert_id,
+                        "initiated_at": datetime.utcnow().isoformat(),
+                        "workflow_type": "alert_triage"
+                    })
+                except Exception as db_error:
+                    logger.error(f"Failed to save workflow state: {db_error}")
+                
                 # Return workflow tracking information
                 return {
                     "status": "workflow_initiated",
                     "workflow_id": workflow_id,
+                    "alert_id": alert_id,
                     "message": "Alert processing workflow started",
-                    "tracking_url": f"/workflow/status/{workflow_id}"
+                    "tracking_url": f"/workflow/status/{workflow_id}",
+                    "database_saved": db_alert is not None
                 }
             else:
                 logger.error("Failed to initiate workflow")

@@ -16,6 +16,7 @@ from coral_protocol import CoralMessage, MessageType, AgentCapability
 from models.alert_models import SecurityAlert, AlertType, AlertStatus
 from agents.task_executor_base import TaskExecutorBase
 from coral_protocol.orchestration_types import AgentTask
+from services.database_service import db_service
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +130,47 @@ class AlertReceiverAgent(TaskExecutorBase):
             
             # Step 5: Determine next workflow steps
             workflow_recommendations = await self._recommend_workflow_steps(security_alert)
+            
+            # Save AI analysis to database
+            try:
+                analysis_data = {
+                    "false_positive_probability": quality_assessment.get("false_positive_likelihood", 0) / 100.0,
+                    "severity_score": self._calculate_severity_score(security_alert.severity),
+                    "context_data": {
+                        "normalized_data": normalized_alert,
+                        "quality_assessment": quality_assessment,
+                        "ai_insights": ai_insights
+                    },
+                    "recommended_actions": workflow_recommendations.get("immediate_actions", []),
+                    "agent_results": {
+                        "agent_id": self.agent_id,
+                        "processing_metadata": {
+                            "processed_at": datetime.datetime.utcnow().isoformat(),
+                            "task_id": task.task_id,
+                            "processing_time_ms": (datetime.datetime.utcnow() - task.started_at).total_seconds() * 1000
+                        }
+                    },
+                    "confidence_score": quality_assessment.get("processing_confidence", 0) / 100.0,
+                    "processing_time_ms": (datetime.datetime.utcnow() - task.started_at).total_seconds() * 1000
+                }
+                
+                await db_service.save_ai_analysis(security_alert.alert_id, analysis_data)
+                logger.info(f"AI analysis saved to database for alert: {security_alert.alert_id}")
+                
+            except Exception as db_error:
+                logger.error(f"Failed to save AI analysis to database: {db_error}")
+                # Continue processing even if database save fails
+            
+            # Update agent status
+            try:
+                await db_service.update_agent_status(self.agent_id, {
+                    "status": "active",
+                    "last_activity": datetime.datetime.utcnow().isoformat(),
+                    "last_processed_alert": security_alert.alert_id,
+                    "processing_count": 1  # This would be incremented in a real implementation
+                })
+            except Exception as status_error:
+                logger.error(f"Failed to update agent status: {status_error}")
             
             # Prepare result
             result = {
@@ -454,6 +496,19 @@ class AlertReceiverAgent(TaskExecutorBase):
             "threat_indicators": [],
             "contextual_info": "Limited context available"
         }
+    
+    def _calculate_severity_score(self, severity: str) -> float:
+        """Calculate numeric severity score from severity string"""
+        
+        severity_mapping = {
+            "Critical": 1.0,
+            "High": 0.8,
+            "Medium": 0.6,
+            "Low": 0.4,
+            "Info": 0.2
+        }
+        
+        return severity_mapping.get(severity, 0.5)
     
     async def setup_llm_capabilities(self):
         """Setup LLM prompts and templates for alert normalization"""
