@@ -36,10 +36,10 @@ logs/
 *.sqlite3
 
 # AI/ML models and data
-models/
 *.pkl
 *.h5
-data/
+data/*
+!data/models/
 
 # Project specific
 alerts/
