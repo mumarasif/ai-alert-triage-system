@@ -91,18 +91,17 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://vigil-insight-dash.lovable.app",
+        "https://f9864b46-7f81-4309-94ac-cf5c65160a9c.lovableproject.com",  # ← Correct domain
         "http://localhost:3000",  # For local development
         "http://localhost:8080",  # For local API testing
     ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # ← Added PATCH
     allow_headers=["*"],
 )
 
 # Include API routes from routes.py
 app.include_router(api_routes_app.router)
-
 class OrchestratedAlertTriageSystem:
     """Main orchestrated system with true workflow orchestration"""
     
