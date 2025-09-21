@@ -4,6 +4,7 @@ uvicorn==0.35.0
 pydantic==2.11.9
 PyYAML==6.0.2
 structlog==25.4.0
+supabase==2.10.0
 
 # Configuration management
 python-dotenv==1.1.1
