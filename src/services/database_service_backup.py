@@ -6,7 +6,7 @@ Handles all database interactions for the AI Alert Triage System
 import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
-from src.database.supabase_client import supabase
+from database.supabase_client import supabase
 
 logger = logging.getLogger(__name__)
 
