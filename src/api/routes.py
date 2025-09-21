@@ -32,9 +32,13 @@ def create_app() -> FastAPI:
     # Enable CORS for frontend integration
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # Configure for your specific frontend domain in production
+        allow_origins=[
+            "https://vigil-insight-dash.lovable.app",
+            "http://localhost:3000",  # For local development
+            "http://localhost:8080",  # For local API testing
+        ],
         allow_credentials=True,
-        allow_methods=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
     
@@ -100,12 +104,20 @@ async def get_alerts(
         Dict: Paginated alerts data
     """
     try:
+        logger.info(f"Retrieving alerts - limit: {limit}, offset: {offset}, status: {status}")
+        
+        # Check database connection first
+        if not db_service.is_healthy():
+            logger.error("Database service is not healthy")
+            raise HTTPException(status_code=503, detail="Database service unavailable")
+        
         alerts = await db_service.get_alerts(limit=limit, offset=offset, status=status)
+        logger.info(f"Retrieved {len(alerts)} alerts from database")
         
         # Get total count for pagination
         total_count = len(await db_service.get_alerts(limit=10000))  # Get approximate total
         
-        return {
+        response = {
             "data": alerts,
             "pagination": {
                 "limit": limit,
@@ -116,9 +128,14 @@ async def get_alerts(
             "timestamp": datetime.now().isoformat()
         }
         
+        logger.info(f"Returning {len(alerts)} alerts to frontend")
+        return response
+        
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error retrieving alerts: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error retrieving alerts: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to load alerts: {str(e)}")
 
 @app.get("/alerts/{alert_id}")
 async def get_alert_details(
@@ -403,4 +420,24 @@ async def get_database_status():
         
     except Exception as e:
         logger.error(f"Error retrieving database status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/test/connection")
+async def test_connection():
+    """
+    Simple test endpoint to verify the API is working
+    
+    Returns:
+        Dict: Test response
+    """
+    try:
+        return {
+            "status": "success",
+            "message": "API is working correctly",
+            "timestamp": datetime.now().isoformat(),
+            "cors_configured": True,
+            "frontend_domain": "https://vigil-insight-dash.lovable.app"
+        }
+    except Exception as e:
+        logger.error(f"Error in test connection: {e}")
         raise HTTPException(status_code=500, detail=str(e))
