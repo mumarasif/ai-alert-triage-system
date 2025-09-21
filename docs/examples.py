@@ -1,8 +1,8 @@
 """
-Alert Triage System - Usage Examples
+AI-Powered Alert Triage System - Usage Examples
 
-This file contains comprehensive examples demonstrating how to use the Alert Triage System
-in various scenarios, from basic alert processing to advanced integrations.
+This file contains comprehensive examples demonstrating how to use the AI-Powered Alert Triage System
+with Coral Protocol orchestration and AI agents in various scenarios.
 """
 
 import asyncio
@@ -11,7 +11,7 @@ import json
 from typing import Dict, Any, List
 
 # Import the main system components
-from src.main import AlertTriageSystem
+from src.main import OrchestratedOrchestratedAlertTriageSystem
 from src.coral_protocol import CoralRegistry, CoralMessage, MessageType
 from src.coral_protocol.agent_base import CoralAgent
 from src.agents import (
@@ -20,10 +20,9 @@ from src.agents import (
     SeverityAnalyzerAgent,
     ContextGathererAgent,
     ResponseCoordinatorAgent,
-    WorkflowOrchestratorAgent
+    OrchestratorAgent
 )
 from src.models.alert_models import SecurityAlert, AlertType, AlertSeverity
-from src.api.webhook_server import WebhookReceiver
 
 
 # ===============================================
@@ -32,12 +31,12 @@ from src.api.webhook_server import WebhookReceiver
 
 async def example_basic_alert_processing():
     """
-    Basic example: Process a single alert through the complete workflow
+    Basic example: Process a single alert through the AI-powered workflow
     """
-    print("=== Example 1: Basic Alert Processing ===")
+    print("=== Example 1: AI-Powered Alert Processing ===")
     
-    # Initialize the system
-    system = AlertTriageSystem()
+    # Initialize the AI-powered system
+    system = OrchestratedAlertTriageSystem()
     await system.initialize()
     
     try:
@@ -127,7 +126,7 @@ async def example_batch_alert_processing():
         }
     ]
     
-    system = AlertTriageSystem()
+    system = OrchestratedAlertTriageSystem()
     await system.initialize()
     
     try:
@@ -203,7 +202,7 @@ async def example_webhook_integration():
     print("=== Example 3: Webhook Integration ===")
     
     # Initialize system and webhook receiver
-    system = AlertTriageSystem()
+    system = OrchestratedAlertTriageSystem()
     await system.initialize()
     
     webhook_config = {
@@ -438,7 +437,7 @@ async def example_custom_agent():
     print("=== Example 4: Custom Agent Development ===")
     
     # Create system with custom agent
-    system = AlertTriageSystem()
+    system = OrchestratedAlertTriageSystem()
     
     # Add custom agent to the system
     threat_hunter = ThreatHuntingAgent()
@@ -510,7 +509,7 @@ async def example_performance_monitoring():
     """
     print("=== Example 5: Performance Monitoring ===")
     
-    system = AlertTriageSystem()
+    system = OrchestratedAlertTriageSystem()
     await system.initialize()
     
     try:
@@ -646,8 +645,11 @@ def create_sample_alerts(count: int) -> List[Dict[str, Any]]:
     return alerts
 
 
-# Run examples if script is executed directly
+# Run AI-powered examples if script is executed directly
 if __name__ == "__main__":
+    print("AI-Powered Alert Triage System - Examples")
+    print("=========================================")
+    
     # Run individual example
     # asyncio.run(example_basic_alert_processing())
     
